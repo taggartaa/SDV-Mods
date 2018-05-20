@@ -29,8 +29,7 @@ namespace CJBCheatsMenu.Framework
         ** Menu settings
         ****/
         /// <summary>The tab shown by default when you open the menu.</summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public MenuTab DefaultTab { get; set; } = MenuTab.PlayerAndTools;
+        public string DefaultTab { get; set; } = "CBJCheatsMenu_PlayersAndToolsCheatMenu";
 
         /****
         ** Player cheats
