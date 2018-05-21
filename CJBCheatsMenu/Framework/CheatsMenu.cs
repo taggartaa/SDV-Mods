@@ -7,9 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
 using StardewValley.Menus;
-using SFarmer = StardewValley.Farmer;
 
 namespace CJBCheatsMenu.Framework
 {
@@ -81,7 +79,12 @@ namespace CJBCheatsMenu.Framework
             int labelY = (int)(this.yPositionOnScreen + Game1.tileSize * 1.5f);
             int labelHeight = (int)(Game1.tileSize * 0.9F);
 
-            Menus = new List<Menu.IMenu> { new CheatMenus.PlayersAndToolsCheatGroup(config, cheats, i18n, this.width - Game1.tileSize / 2) };
+            int rowWidth = this.width - Game1.tileSize / 2;
+            Menus = new List<Menu.IMenu>
+            {
+                new CheatMenus.PlayersAndToolsCheatMenu(config, cheats, i18n, rowWidth),
+                new CheatMenus.FarmAndFishingMenu(config, cheats, i18n, rowWidth)
+            };
 
             for (int i = 0; i < Menus.Count; i++)
             {
@@ -107,7 +110,6 @@ namespace CJBCheatsMenu.Framework
             }
 
             /*
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.FarmAndFishing.ToString(), i18n.Get("tabs.farm-and-fishing")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Skills.ToString(), i18n.Get("tabs.skills")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Weather.ToString(), i18n.Get("tabs.weather")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Relationships.ToString(), i18n.Get("tabs.relationships")));
@@ -129,42 +131,7 @@ namespace CJBCheatsMenu.Framework
             switch (this.CurrentTab)
             {
                 case MenuTab.FarmAndFishing:
-                    this.Options.Add(new OptionsElement($"{i18n.Get("farm.title")}:"));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("farm.water-all-fields"), 9, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("farm.durable-fences"), config.DurableFences, value => config.DurableFences = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("farm.instant-build"), config.InstantBuild, value => config.InstantBuild = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("farm.always-auto-feed"), config.AutoFeed, value => config.AutoFeed = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("farm.infinite-hay"), config.InfiniteHay, value => config.InfiniteHay = value));
 
-                    this.Options.Add(new OptionsElement($"{i18n.Get("fishing.title")}:"));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fishing.instant-catch"), config.InstantCatch, value => config.InstantCatch = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fishing.instant-bite"), config.InstantBite, value => config.InstantBite = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fishing.always-throw-max-distance"), config.ThrowBobberMax, value => config.ThrowBobberMax = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fishing.always-treasure"), config.AlwaysTreasure, value => config.AlwaysTreasure = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fishing.durable-tackles"), config.DurableTackles, value => config.DurableTackles = value));
-
-                    this.Options.Add(new OptionsElement($"{i18n.Get("fast-machines.title")}:"));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.cask"), config.FastCask, value => config.FastCask = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.furnace"), config.FastFurnace, value => config.FastFurnace = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.recycling-machine"), config.FastRecyclingMachine, value => config.FastRecyclingMachine = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.crystalarium"), config.FastCrystalarium, value => config.FastCrystalarium = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.incubator"), config.FastIncubator, value => config.FastIncubator = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.slime-incubator"), config.FastSlimeIncubator, value => config.FastSlimeIncubator = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.keg"), config.FastKeg, value => config.FastKeg = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.preserves-jar"), config.FastPreservesJar, value => config.FastPreservesJar = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.cheese-press"), config.FastCheesePress, value => config.FastCheesePress = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.mayonnaise-machine"), config.FastMayonnaiseMachine, value => config.FastMayonnaiseMachine = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.loom"), config.FastLoom, value => config.FastLoom = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.oil-maker"), config.FastOilMaker, value => config.FastOilMaker = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.seed-maker"), config.FastSeedMaker, value => config.FastSeedMaker = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.charcoal-kiln"), config.FastCharcoalKiln, value => config.FastCharcoalKiln = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.slime-egg-press"), config.FastSlimeEggPress, value => config.FastSlimeEggPress = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.tapper"), config.FastTapper, value => config.FastTapper = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.lightning-rod"), config.FastLightningRod, value => config.FastLightningRod = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.bee-house"), config.FastBeeHouse, value => config.FastBeeHouse = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.mushroom-box"), config.FastMushroomBox, value => config.FastMushroomBox = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.worm-bin"), config.FastWormBin, value => config.FastWormBin = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("fast-machines.fruit-trees"), config.FastFruitTree, value => config.FastFruitTree = value));
                     break;
 
                 case MenuTab.Skills:
