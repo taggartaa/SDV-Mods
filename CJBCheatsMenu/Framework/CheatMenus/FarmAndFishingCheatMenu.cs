@@ -1,32 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using StardewValley.Menus;
 
 namespace CJBCheatsMenu.Framework.CheatMenus
 {
-    class FarmAndFishingMenu : CheatMenu
+    class FarmAndFishingCheatMenu : CheatMenu
     {
-        public FarmAndFishingMenu(ModConfig config, Cheats cheats, StardewModdingAPI.ITranslationHelper i18n, int rowWidth)
-            : base(config, cheats, i18n, rowWidth)
+        public FarmAndFishingCheatMenu(ModConfig config, Cheats cheats, StardewModdingAPI.ITranslationHelper i18n)
+            : base(config, cheats, i18n)
         {
         }
 
-        public override string Id
-        {
-            get
-            {
-                return "CBJCheatsMenu_FarmAndFishingMenu";
-            }
-        }
+        public override string Id => "CBJCheatsMenu_FarmAndFishingMenu";
 
-        public override string Title
-        {
-            get
-            {
-               return I18n.Get("tabs.farm-and-fishing");
-            }
-        }
+        public override string Title => I18n.Get("tabs.farm-and-fishing");
 
         public override List<Menu.IOptionGroup> OptionGroups
         {

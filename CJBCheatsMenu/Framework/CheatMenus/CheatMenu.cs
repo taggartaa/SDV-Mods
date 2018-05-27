@@ -8,14 +8,12 @@ namespace CJBCheatsMenu.Framework.CheatMenus
         protected ModConfig Config { get; }
         protected Cheats Cheats { get; }
         protected StardewModdingAPI.ITranslationHelper I18n { get; }
-        protected int RowWidth { get; }
 
-        public CheatMenu(ModConfig config, Cheats cheats, StardewModdingAPI.ITranslationHelper i18n, int rowWidth)
+        public CheatMenu(ModConfig config, Cheats cheats, StardewModdingAPI.ITranslationHelper i18n)
         {
             Config = config;
             Cheats = cheats;
             I18n = i18n;
-            RowWidth = rowWidth;
         }
 
         abstract public string Id { get; }

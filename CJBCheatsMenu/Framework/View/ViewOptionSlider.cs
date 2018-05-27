@@ -33,20 +33,6 @@ namespace CJBCheatsMenu.Framework.View
             }
             set
             {
-                /* Set value to the nearest valid step.
-                int offestFromNextStep = (value - this.Option.MinValue) % this.Option.Step;
-                if (offestFromNextStep != 0)
-                {
-                    if (offestFromNextStep >= this.Option.Step / 2)
-                    {
-                        value += offestFromNextStep;
-                    }
-                    else
-                    {
-                        value -= (this.Option.Step - offestFromNextStep);
-                    }
-                }
-                */
                 if (value < this.Option.MinValue)
                 {
                     this.sliderValue = this.Option.MinValue;

@@ -5,26 +5,14 @@ namespace CJBCheatsMenu.Framework.CheatMenus
 {
     internal class PlayersAndToolsCheatMenu : CheatMenu
     {
-        public PlayersAndToolsCheatMenu(ModConfig config, Cheats cheats, StardewModdingAPI.ITranslationHelper I18n, int rowWidth)
-            : base(config, cheats, I18n, rowWidth)
+        public PlayersAndToolsCheatMenu(ModConfig config, Cheats cheats, StardewModdingAPI.ITranslationHelper I18n)
+            : base(config, cheats, I18n)
         {
         }
 
-        public override string Id
-        {
-            get
-            {
-                return "CBJCheatsMenu_PlayersAndToolsCheatMenu";
-            }
-        }
+        public override string Id => "CBJCheatsMenu_PlayersAndToolsCheatMenu";
 
-        public override string Title
-        {
-            get
-            {
-                return I18n.Get("tabs.player-and-tools");
-            }
-        }
+        public override string Title => I18n.Get("tabs.player-and-tools");
 
         public override List<Menu.IOptionGroup> OptionGroups
         {
