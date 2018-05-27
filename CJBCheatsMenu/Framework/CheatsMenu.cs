@@ -65,6 +65,37 @@ namespace CJBCheatsMenu.Framework
             }
         }
 
+        private int RowWidth
+        {
+            get
+            {
+                return this.width - Game1.tileSize / 2;
+            }
+        }
+
+        private OptionsElement GetViewForOption(Menu.IOption option)
+        {
+            Menu.IOptionCheckbox checkboxOption = option as Menu.IOptionCheckbox;
+            if (checkboxOption != null)
+            {
+                return new View.ViewOptionCheckbox(checkboxOption);
+            }
+
+            Menu.IOptionSetButton setButtonOption = option as Menu.IOptionSetButton;
+            if (setButtonOption != null)
+            {
+                return new View.ViewOptionSetButton(setButtonOption, RowWidth);
+            }
+
+            Menu.IOptionSlider sliderOption = option as Menu.IOptionSlider;
+            if (sliderOption != null)
+            {
+                return new View.ViewOptionSlider(sliderOption);
+            }
+
+            return null;
+        }
+
         public CheatsMenu(string currentTabId, ModConfig config, Cheats cheats, ITranslationHelper i18n)
           : base(Game1.viewport.Width / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 800 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2)
         {
@@ -79,11 +110,10 @@ namespace CJBCheatsMenu.Framework
             int labelY = (int)(this.yPositionOnScreen + Game1.tileSize * 1.5f);
             int labelHeight = (int)(Game1.tileSize * 0.9F);
 
-            int rowWidth = this.width - Game1.tileSize / 2;
             Menus = new List<Menu.IMenu>
             {
-                new CheatMenus.PlayersAndToolsCheatMenu(config, cheats, i18n, rowWidth),
-                new CheatMenus.FarmAndFishingMenu(config, cheats, i18n, rowWidth)
+                new CheatMenus.PlayersAndToolsCheatMenu(config, cheats, i18n, this.RowWidth),
+                new CheatMenus.FarmAndFishingMenu(config, cheats, i18n, this.RowWidth)
             };
 
             for (int i = 0; i < Menus.Count; i++)
@@ -125,7 +155,18 @@ namespace CJBCheatsMenu.Framework
             for (int i = 0; i < CheatsMenu.ItemsPerPage; i++)
                 this.OptionSlots.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize * 5 / 4 + Game1.pixelZoom + i * ((this.height - Game1.tileSize * 2) / CheatsMenu.ItemsPerPage), this.width - Game1.tileSize / 2, (this.height - Game1.tileSize * 2) / CheatsMenu.ItemsPerPage + Game1.pixelZoom), string.Concat(i)));
 
-            this.Options.AddRange(CurrentMenu.OptionElements);
+            foreach (Menu.IOptionGroup group in CurrentMenu.OptionGroups)
+            {
+                this.Options.Add(new View.ViewOptionGroupHeader(group.Title));
+                foreach (Menu.IOption option in group.Options)
+                {
+                    OptionsElement optionView = this.GetViewForOption(option);
+                    if (optionView != null)
+                    {
+                        this.Options.Add(optionView);
+                    }
+                }
+            }
 
             /*
             switch (this.CurrentTab)

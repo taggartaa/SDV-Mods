@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StardewValley.Menus;
+﻿using System.Collections.Generic;
+using CJBCheatsMenu.Framework.Menu;
 
 namespace CJBCheatsMenu.Framework.CheatMenus
 {
@@ -26,6 +22,6 @@ namespace CJBCheatsMenu.Framework.CheatMenus
 
         abstract public string Title { get; }
 
-        abstract public List<OptionsElement> OptionElements { get; }
+        abstract public List<IOptionGroup> OptionGroups { get; }
     }
 }

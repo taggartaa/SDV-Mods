@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CJBCheatsMenu.Framework.Menu
 {
     public interface IOptionGroup
     {
         string Title { get; }
-        List<StardewValley.Menus.OptionsElement> OptionElements { get; }
+        List<IOption> Options { get; }
     }
 }

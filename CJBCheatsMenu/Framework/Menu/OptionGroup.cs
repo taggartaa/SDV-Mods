@@ -11,22 +11,11 @@ namespace CJBCheatsMenu.Framework.Menu
     {
         public OptionGroup(string title)
         {
-            OptionElements.Add(new OptionsElement(title));
+            this.Title = title;
         }
 
-        public string Title
-        {
-            get
-            {
-                return OptionElements.First().label;
-            }
-        }
+        public string Title { get; private set; }
 
-        public void AddOption(OptionsElement element)
-        {
-            OptionElements.Add(element);
-        }
-
-        public List<StardewValley.Menus.OptionsElement> OptionElements { get; private set; } = new List<OptionsElement>();
+        public List<IOption> Options { get; private set; } = new List<IOption>();
     }
 }
