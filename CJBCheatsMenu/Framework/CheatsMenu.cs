@@ -93,7 +93,13 @@ namespace CJBCheatsMenu.Framework
                 return new View.ViewOptionSlider(sliderOption);
             }
 
-            return null;
+            Menu.IOptionHeartPicker heartPickerOption = option as Menu.IOptionHeartPicker;
+            if (heartPickerOption != null)
+            {
+                return new View.ViewOptionHeartPicker(heartPickerOption);
+            }
+
+            return new View.ViewOption<Menu.IOption>(option);
         }
 
         public CheatsMenu(string currentTabId, ModConfig config, Cheats cheats, ITranslationHelper i18n)
@@ -114,7 +120,9 @@ namespace CJBCheatsMenu.Framework
             {
                 new CheatMenus.PlayersAndToolsCheatMenu(config, cheats, i18n),
                 new CheatMenus.FarmAndFishingCheatMenu(config, cheats, i18n),
-                new CheatMenus.SkillsCheatMenu(config, cheats, i18n)
+                new CheatMenus.SkillsCheatMenu(config, cheats, i18n),
+                new CheatMenus.WeatherCheatMenu(config, cheats, i18n),
+                new CheatMenus.RelationshipsCheatMenu(config, cheats, i18n)
             };
 
             for (int i = 0; i < Menus.Count; i++)
@@ -141,8 +149,6 @@ namespace CJBCheatsMenu.Framework
             }
 
             /*
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Skills.ToString(), i18n.Get("tabs.skills")));
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Weather.ToString(), i18n.Get("tabs.weather")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Relationships.ToString(), i18n.Get("tabs.relationships")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.WarpLocations.ToString(), i18n.Get("tabs.warp")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Time.ToString(), i18n.Get("tabs.time")));
@@ -162,47 +168,17 @@ namespace CJBCheatsMenu.Framework
                 foreach (Menu.IOption option in group.Options)
                 {
                     OptionsElement optionView = this.GetViewForOption(option);
-                    if (optionView != null)
-                    {
-                        this.Options.Add(optionView);
-                    }
+                    this.Options.Add(optionView);
                 }
             }
 
             /*
             switch (this.CurrentTab)
             {
-                case MenuTab.FarmAndFishing:
-
-                    break;
-
-                case MenuTab.Skills:
-                    break;
-
-                case MenuTab.Weather:
-                    this.Options.Add(new OptionsElement($"{i18n.Get("weather.title")}:"));
-                    this.Options.Add(new CheatsOptionsWeatherElement($"{i18n.Get("weather.current")}", () => CJB.GetWeatherNexDay(i18n)));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("weather.sunny"), 10, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("weather.raining"), 11, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("weather.lightning"), 12, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("weather.snowing"), 13, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    break;
 
                 case MenuTab.Relationships:
                     {
-                        this.Options.Add(new OptionsElement($"{i18n.Get("relationships.title")}:"));
-                        this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("relationships.give-gifts-anytime"), config.AlwaysGiveGift, value => config.AlwaysGiveGift = value));
-                        this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("relationships.no-decay"), config.NoFriendshipDecay, value => config.NoFriendshipDecay = value));
-                        this.Options.Add(new OptionsElement($"{i18n.Get("relationships.friends")}:"));
 
-                        IList<OptionsElement> relationshipElements = new List<OptionsElement>();
-                        foreach (NPC npc in Utility.getAllCharacters())
-                        {
-                            if (!Game1.player.friendshipData.ContainsKey(npc.Name) || (npc.Name == "Sandy" && !Game1.player.mailReceived.Contains("ccVault")) || npc.Name == "???" || npc.Name == "Bouncer" || npc.Name == "Marlon" || npc.Name == "Gil" || npc.Name == "Gunther" || npc.IsMonster || npc is Horse || npc is Pet)
-                                continue;
-                            relationshipElements.Add(new CheatsOptionsNPCSlider(npc));
-                        }
-                        this.Options.AddRange(relationshipElements.OrderBy(p => p.label));
                     }
                     break;
 

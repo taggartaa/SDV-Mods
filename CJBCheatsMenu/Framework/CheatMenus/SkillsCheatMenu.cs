@@ -32,7 +32,7 @@ namespace CJBCheatsMenu.Framework.CheatMenus
 
         public override string Id => "CBJCheatsMenu_SkillsCheatMenu";
 
-        public override string Title => I18n.Get("skills.title");
+        public override string Title => I18n.Get("tabs.skills");
 
         public override List<Menu.IOptionGroup> OptionGroups
         {

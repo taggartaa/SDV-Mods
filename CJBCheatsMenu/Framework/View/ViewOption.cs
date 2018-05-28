@@ -7,7 +7,7 @@ namespace CJBCheatsMenu.Framework.View
         public T Option { get; private set; }
         public virtual string DrawnLabel => this.Option.Label;
 
-        public ViewOption(T option, int width, int height, int whichOption = -1)
+        public ViewOption(T option, int width = 9 * StardewValley.Game1.pixelZoom, int height = 9 * StardewValley.Game1.pixelZoom, int whichOption = -1)
             : base(option.Label, -1, -1, width, height, whichOption)
         {
             this.Option = option;
