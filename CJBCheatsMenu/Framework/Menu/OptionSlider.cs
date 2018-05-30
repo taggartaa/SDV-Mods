@@ -4,13 +4,18 @@ namespace CJBCheatsMenu.Framework.Menu
 {
     public class OptionSlider : OptionWithValue<int>, IOptionSlider
     {
-        public int MinValue { get; private set; }
+        public int MinValue { get; protected set; }
 
-        public int MaxValue { get; private set; }
+        public int MaxValue { get; protected set; }
 
-        public int Step { get; private set; }
+        public int Step { get; protected set; }
 
-        public OptionSlider(string label, int initialValue, Action<int> valueChangedCallback, int minValue, int maxValue, int step = 1)
+        public virtual string ConvertValueToString(int value)
+        {
+            return value.ToString();
+        }
+
+        public OptionSlider(string label, int initialValue, Action<int> valueChangedCallback, int minValue = 0, int maxValue = 10, int step = 1)
             : base(label, initialValue, valueChangedCallback)
         {
             this.MinValue = minValue;

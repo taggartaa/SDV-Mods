@@ -5,5 +5,6 @@
         int MinValue { get; }
         int MaxValue { get; }
         int Step { get;  }
+        string ConvertValueToString(int value);
     }
 }

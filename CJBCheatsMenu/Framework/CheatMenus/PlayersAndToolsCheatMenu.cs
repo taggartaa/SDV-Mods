@@ -85,11 +85,11 @@ namespace CJBCheatsMenu.Framework.CheatMenus
 
             private StardewModdingAPI.ITranslationHelper I18n { get; set; }
 
-            public int MinValue => -10;
+            public int MinValue => 0;
 
             public int MaxValue => 10;
 
-            public int Step => 2;
+            public int Step => 1;
 
             public int Value
             {
@@ -106,6 +106,11 @@ namespace CJBCheatsMenu.Framework.CheatMenus
             public string Label => this.I18n.Get("player.movement-speed");
 
             public bool Disabled => !Config.IncreasedMovement;
+
+            public string ConvertValueToString(int value)
+            {
+                return value.ToString();
+            }
         }
     }
 }

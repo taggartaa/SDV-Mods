@@ -11,7 +11,7 @@ namespace CJBCheatsMenu.Framework.CheatMenus
         {
         }
 
-        public override string Id => "CBJCheatsMenu_FarmAndFishingMenu";
+        public override string Id => "CBJCheatsMenu_FarmAndFishingCheatMenu";
 
         public override string Title => I18n.Get("tabs.farm-and-fishing");
 

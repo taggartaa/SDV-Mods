@@ -122,7 +122,9 @@ namespace CJBCheatsMenu.Framework
                 new CheatMenus.FarmAndFishingCheatMenu(config, cheats, i18n),
                 new CheatMenus.SkillsCheatMenu(config, cheats, i18n),
                 new CheatMenus.WeatherCheatMenu(config, cheats, i18n),
-                new CheatMenus.RelationshipsCheatMenu(config, cheats, i18n)
+                new CheatMenus.RelationshipsCheatMenu(config, cheats, i18n),
+                new CheatMenus.WarpLocationsCheatMenu(config, cheats, i18n),
+                new CheatMenus.TimeCheatMenu(config, cheats, i18n)
             };
 
             for (int i = 0; i < Menus.Count; i++)
@@ -149,8 +151,6 @@ namespace CJBCheatsMenu.Framework
             }
 
             /*
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Relationships.ToString(), i18n.Get("tabs.relationships")));
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.WarpLocations.ToString(), i18n.Get("tabs.warp")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Time.ToString(), i18n.Get("tabs.time")));
                 this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i, Game1.tileSize * 5, Game1.tileSize), MenuTab.Controls.ToString(), i18n.Get("tabs.controls")));
             */
@@ -183,36 +183,11 @@ namespace CJBCheatsMenu.Framework
                     break;
 
                 case MenuTab.WarpLocations:
-                    this.Options.Add(new OptionsElement($"{i18n.Get("warp.title")}:"));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.farm"), 100, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.pierre-shop"), 101, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.blacksmith"), 102, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.museum"), 103, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.saloon"), 104, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.community-center"), 105, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.carpenter"), 106, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.adventurers-guild"), 107, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.ranch"), 113, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.mines"), 109, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.willy-shop"), 110, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.wizard-tower"), 114, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.hats"), 115, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.desert"), 112, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.sandy-shop"), 119, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.casino"), 120, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.quarry"), 108, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.new-beach"), 111, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.secret-woods"), 116, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.sewer"), 117, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("warp.bathhouse"), 118, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
+
                     break;
 
                 case MenuTab.Time:
-                    this.Options.Add(new OptionsElement($"{i18n.Get("time.title")}:"));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("time.freeze-inside"), config.FreezeTimeInside, value => config.FreezeTimeInside = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("time.freeze-caves"), config.FreezeTimeCaves, value => config.FreezeTimeCaves = value));
-                    this.Options.Add(new CheatsOptionsCheckbox(i18n.Get("time.freeze-everywhere"), config.FreezeTime, value => config.FreezeTime = value));
-                    this.Options.Add(new CheatsOptionsSlider(i18n.Get("time.time"), (Game1.timeOfDay - 600) / 100, 19, value => this.SafelySetTime((value * 100) + 600), width: 100, format: value => Game1.getTimeOfDayString((value * 100) + 600)));
+
                     break;
 
                 case MenuTab.Controls:
@@ -225,31 +200,6 @@ namespace CJBCheatsMenu.Framework
             }
             */
             this.SetScrollBarToCurrentIndex();
-        }
-
-        /// <summary>Safely transition to the given time, allowing NPCs to update their schedule.</summary>
-        /// <param name="time">The time of day.</param>
-        private void SafelySetTime(int time)
-        {
-            // define conversion between game time and TimeSpan
-            TimeSpan ToTimeSpan(int value) => new TimeSpan(0, value / 100, value % 100, 0);
-            int FromTimeSpan(TimeSpan span) => (span.Hours * 100) + span.Minutes;
-
-            // transition to new time
-            int intervals = (int)((ToTimeSpan(time) - ToTimeSpan(Game1.timeOfDay)).TotalMinutes / 10);
-            if (intervals > 0)
-            {
-                for (int i = 0; i < intervals; i++)
-                    Game1.performTenMinuteClockUpdate();
-            }
-            else if (intervals < 0)
-            {
-                for (int i = 0; i > intervals; i--)
-                {
-                    Game1.timeOfDay = FromTimeSpan(ToTimeSpan(Game1.timeOfDay).Subtract(TimeSpan.FromMinutes(20))); // offset 20 mins so game updates to next interval
-                    Game1.performTenMinuteClockUpdate();
-                }
-            }
         }
 
         /// <summary>Get whether the player has the given profession.</summary>

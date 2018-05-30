@@ -8,9 +8,12 @@ namespace CJBCheatsMenu.Framework.View
 {
     internal class ViewOptionSlider : ViewOption<Menu.IOptionSlider>
     {
+        private const int MIN_WIDTH = 48;
+        private const int MAX_WIDTH = 96;
+
         private int sliderValue;
-        public ViewOptionSlider(Menu.IOptionSlider sliderOption, int width = 48)
-            : base(sliderOption, width * Game1.pixelZoom, 6 * Game1.pixelZoom, 0)
+        public ViewOptionSlider(Menu.IOptionSlider sliderOption)
+            : base(sliderOption, MIN_WIDTH * Game1.pixelZoom, 6 * Game1.pixelZoom, 0)
         {
             if (sliderOption.MinValue >= sliderOption.MaxValue)
             {
@@ -23,6 +26,7 @@ namespace CJBCheatsMenu.Framework.View
             }
 
             this.SliderValue = sliderOption.Value;
+            this.bounds.Width = Math.Min(MAX_WIDTH, Math.Max(MIN_WIDTH, this.SliderSegments * 5)) * Game1.pixelZoom;
         }
 
         private int SliderValue
@@ -92,7 +96,7 @@ namespace CJBCheatsMenu.Framework.View
             this.Option.Value = this.SliderValue;
         }
 
-        public override string DrawnLabel => $"{this.Option.Label}: {this.SliderValue}";
+        public override string DrawnLabel => $"{this.Option.Label}: {this.Option.ConvertValueToString(this.SliderValue)}";
 
         public override void draw(SpriteBatch spriteBatch, int slotX, int slotY)
         {

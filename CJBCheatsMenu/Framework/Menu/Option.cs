@@ -2,8 +2,8 @@
 {
     public class Option : IOption
     {
-        public string Label { get; private set; }
-        public bool Disabled { get; private set; }
+        public virtual string Label { get; protected set; }
+        public virtual bool Disabled { get; protected set; }
 
         public Option(string label, bool disabled = false)
         {

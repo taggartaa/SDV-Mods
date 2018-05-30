@@ -47,6 +47,8 @@
     <Compile Include="Framework\CheatMenus\FarmAndFishingCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\RelationshipsCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\SkillsCheatMenu.cs" />
+    <Compile Include="Framework\CheatMenus\TimeCheatMenu.cs" />
+    <Compile Include="Framework\CheatMenus\WarpLocationsCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\WeatherCheatMenu.cs" />
     <Compile Include="Framework\Menu\IOptionHeartPicker.cs" />
     <Compile Include="Framework\Menu\IOptionCheckbox.cs" />
@@ -56,6 +58,7 @@
     <Compile Include="Framework\Menu\OptionWithValue.cs" />
     <Compile Include="Framework\Menu\IOptionSlider.cs" />
     <Compile Include="Framework\Menu\OptionSlider.cs" />
+    <Compile Include="Framework\Menu\OptionSliderTimePicker.cs" />
     <Compile Include="Framework\View\ViewOption.cs" />
     <Compile Include="Framework\View\ViewOptionCheckbox.cs" />
     <Compile Include="Framework\View\ViewOptionGroupHeader.cs" />
