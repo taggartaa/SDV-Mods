@@ -7,6 +7,12 @@ namespace CJBCheatsMenu.Framework
 {
     internal class ModConfig
     {
+        public const Keys DefaultKeyOpenMenu = Keys.P;
+        public const Keys DefaultKeyFreezeTime = Keys.T;
+        public const Keys DefaultKeyGrowTree = Keys.NumPad1;
+        public const Keys DefaultKeyGrowCrop = Keys.NumPad2;
+          
+
         /*********
         ** Accessors
         *********/
@@ -14,16 +20,16 @@ namespace CJBCheatsMenu.Framework
         ** Keyboard buttons
         ****/
         /// <summary>The keyboard button which opens the menu.</summary>
-        public string OpenMenuKey { get; set; } = Keys.P.ToString();
+        public string OpenMenuKey { get; set; } = DefaultKeyOpenMenu.ToString();
 
         /// <summary>The keyboard button which freezes the game clock.</summary>
-        public string FreezeTimeKey { get; set; } = Keys.T.ToString();
+        public string FreezeTimeKey { get; set; } = DefaultKeyFreezeTime.ToString();
 
         /// <summary>The keyboard button which instantly grows the tree under the tool cursor.</summary>
-        public string GrowTreeKey { get; set; } = Keys.NumPad1.ToString();
+        public string GrowTreeKey { get; set; } = DefaultKeyGrowTree.ToString();
 
         /// <summary>The keyboard button which instantly grows crops adjacent to your character.</summary>
-        public string GrowCropsKey { get; set; } = Keys.NumPad2.ToString();
+        public string GrowCropsKey { get; set; } = DefaultKeyGrowCrop.ToString();
 
         /****
         ** Menu settings

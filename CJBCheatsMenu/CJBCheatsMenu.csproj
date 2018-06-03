@@ -44,6 +44,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Framework\CheatMenus\CheatMenu.cs" />
+    <Compile Include="Framework\CheatMenus\ControlsCheatsMenu.cs" />
     <Compile Include="Framework\CheatMenus\FarmAndFishingCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\RelationshipsCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\SkillsCheatMenu.cs" />
@@ -52,13 +53,16 @@
     <Compile Include="Framework\CheatMenus\WeatherCheatMenu.cs" />
     <Compile Include="Framework\Menu\IOptionHeartPicker.cs" />
     <Compile Include="Framework\Menu\IOptionCheckbox.cs" />
+    <Compile Include="Framework\Menu\IOptionKeyPicker.cs" />
     <Compile Include="Framework\Menu\IOptionSetButton.cs" />
     <Compile Include="Framework\Menu\IOptionWithValue.cs" />
     <Compile Include="Framework\Menu\OptionHeartPicker.cs" />
+    <Compile Include="Framework\Menu\OptionKeyPicker.cs" />
     <Compile Include="Framework\Menu\OptionWithValue.cs" />
     <Compile Include="Framework\Menu\IOptionSlider.cs" />
     <Compile Include="Framework\Menu\OptionSlider.cs" />
     <Compile Include="Framework\Menu\OptionSliderTimePicker.cs" />
+    <Compile Include="Framework\View\ViewOptionKeyPicker.cs" />
     <Compile Include="Framework\View\ViewOption.cs" />
     <Compile Include="Framework\View\ViewOptionCheckbox.cs" />
     <Compile Include="Framework\View\ViewOptionGroupHeader.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Framework\CheatOptions\CheatsOptionsSlider.cs" />
     <Compile Include="Framework\CJB.cs" />
     <Compile Include="Framework\Menu\IOptionGroup.cs" />
+    <Compile Include="Framework\View\ViewOptionSetButtonBase.cs" />
     <Compile Include="Framework\View\ViewOptionSlider.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Framework\Constants\MenuTab.cs" />

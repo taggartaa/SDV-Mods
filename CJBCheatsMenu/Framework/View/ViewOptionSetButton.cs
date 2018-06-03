@@ -3,15 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CJBCheatsMenu.Framework.View
 {
-    internal class ViewOptionSetButton : ViewOption<Menu.IOptionSetButton>
+    internal class ViewOptionSetButton : ViewOptionSetButtonBase<Menu.IOptionSetButton>
     {
-        private Rectangle SetButtonBounds { get; set; }
-        private readonly Rectangle SetButtonSprite = new Rectangle(294, 428, 21, 11);
 
         public ViewOptionSetButton(Menu.IOptionSetButton setButtonOption, int containerWidth) :
-            base(setButtonOption, containerWidth + 1, 11 * StardewValley.Game1.pixelZoom)
+            base(setButtonOption, containerWidth)
         {
-            SetButtonBounds = new Rectangle(containerWidth - 28 * StardewValley.Game1.pixelZoom, -1 + StardewValley.Game1.pixelZoom * 3, 21 * StardewValley.Game1.pixelZoom, 11 * StardewValley.Game1.pixelZoom);
         }
 
         public override void receiveLeftClick(int x, int y)
@@ -25,12 +22,8 @@ namespace CJBCheatsMenu.Framework.View
 
         public override void draw(SpriteBatch spriteBatch, int slotX, int slotY)
         {
-            // base draw isn't called, so have to set this here
-            this.label = this.Option.Label;
-            this.greyedOut = this.Option.Disabled;
-
+            base.draw(spriteBatch, slotX, slotY);
             StardewValley.Utility.drawTextWithShadow(spriteBatch, this.label, StardewValley.Game1.dialogueFont, new Vector2(this.bounds.X + slotX, this.bounds.Y + slotY), this.greyedOut ? StardewValley.Game1.textColor * 0.33f : StardewValley.Game1.textColor, 1f, 0.15f);
-            StardewValley.Utility.drawWithShadow(spriteBatch, StardewValley.Game1.mouseCursors, new Vector2(this.SetButtonBounds.X + slotX, this.SetButtonBounds.Y + slotY), this.SetButtonSprite, Color.White, 0.0f, Vector2.Zero, StardewValley.Game1.pixelZoom, false, 0.15f);
         }
     }
 }

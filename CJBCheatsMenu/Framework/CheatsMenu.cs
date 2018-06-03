@@ -84,7 +84,7 @@ namespace CJBCheatsMenu.Framework
             Menu.IOptionSetButton setButtonOption = option as Menu.IOptionSetButton;
             if (setButtonOption != null)
             {
-                return new View.ViewOptionSetButton(setButtonOption, RowWidth);
+                return new View.ViewOptionSetButton(setButtonOption, this.RowWidth);
             }
 
             Menu.IOptionSlider sliderOption = option as Menu.IOptionSlider;
@@ -97,6 +97,12 @@ namespace CJBCheatsMenu.Framework
             if (heartPickerOption != null)
             {
                 return new View.ViewOptionHeartPicker(heartPickerOption);
+            }
+
+            Menu.IOptionKeyPicker keyPickerOption = option as Menu.IOptionKeyPicker;
+            if (keyPickerOption != null)
+            {
+                return new View.ViewOptionKeyPicker(keyPickerOption, this.RowWidth, this.TranslationHelper);
             }
 
             return new View.ViewOption<Menu.IOption>(option);
@@ -124,7 +130,8 @@ namespace CJBCheatsMenu.Framework
                 new CheatMenus.WeatherCheatMenu(config, cheats, i18n),
                 new CheatMenus.RelationshipsCheatMenu(config, cheats, i18n),
                 new CheatMenus.WarpLocationsCheatMenu(config, cheats, i18n),
-                new CheatMenus.TimeCheatMenu(config, cheats, i18n)
+                new CheatMenus.TimeCheatMenu(config, cheats, i18n),
+                new CheatMenus.ControlsCheatsMenu(config, cheats, i18n)
             };
 
             for (int i = 0; i < Menus.Count; i++)
@@ -150,11 +157,6 @@ namespace CJBCheatsMenu.Framework
                 CurrentTabId = Menus.First().Id;
             }
 
-            /*
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i++, Game1.tileSize * 5, Game1.tileSize), MenuTab.Time.ToString(), i18n.Get("tabs.time")));
-                this.Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i, Game1.tileSize * 5, Game1.tileSize), MenuTab.Controls.ToString(), i18n.Get("tabs.controls")));
-            */
-
             this.UpArrow = new ClickableTextureComponent("up-arrow", new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", "", Game1.mouseCursors, new Rectangle(421, 459, 11, 12), Game1.pixelZoom);
             this.DownArrow = new ClickableTextureComponent("down-arrow", new Rectangle(this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + this.height - Game1.tileSize, 11 * Game1.pixelZoom, 12 * Game1.pixelZoom), "", "", Game1.mouseCursors, new Rectangle(421, 472, 11, 12), Game1.pixelZoom);
             this.Scrollbar = new ClickableTextureComponent("scrollbar", new Rectangle(this.UpArrow.bounds.X + Game1.pixelZoom * 3, this.UpArrow.bounds.Y + this.UpArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), "", "", Game1.mouseCursors, new Rectangle(435, 463, 6, 10), Game1.pixelZoom);
@@ -172,33 +174,6 @@ namespace CJBCheatsMenu.Framework
                 }
             }
 
-            /*
-            switch (this.CurrentTab)
-            {
-
-                case MenuTab.Relationships:
-                    {
-
-                    }
-                    break;
-
-                case MenuTab.WarpLocations:
-
-                    break;
-
-                case MenuTab.Time:
-
-                    break;
-
-                case MenuTab.Controls:
-                    this.Options.Add(new OptionsElement($"{i18n.Get("controls.title")}:"));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("controls.open-menu"), 1000, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("controls.freeze-time"), 1001, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("controls.grow-tree"), 1002, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    this.Options.Add(new CheatsOptionsInputListener(i18n.Get("controls.grow-crops"), 1003, this.OptionSlots[0].bounds.Width, config, cheats, i18n));
-                    break;
-            }
-            */
             this.SetScrollBarToCurrentIndex();
         }
 
