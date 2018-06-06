@@ -1,7 +1,4 @@
-﻿using CJBCheatsMenu.Framework.Constants;
-using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace CJBCheatsMenu.Framework
 {

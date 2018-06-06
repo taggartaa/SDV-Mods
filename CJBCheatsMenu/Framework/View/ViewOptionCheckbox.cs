@@ -3,14 +3,23 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CJBCheatsMenu.Framework.View
 {
+    /// <summary>
+    /// Renders a checkbox option.
+    /// </summary>
     internal class ViewOptionCheckbox : ViewOption<Menu.IOptionCheckbox>
     {
-
+        /// <summary>
+        /// Constructor for a checkbox view.
+        /// </summary>
+        /// <param name="checkboxOption">The underlying checkbox option this view renders.</param>
         public ViewOptionCheckbox(Menu.IOptionCheckbox checkboxOption)
             : base(checkboxOption, 9 * StardewValley.Game1.pixelZoom, 9 * StardewValley.Game1.pixelZoom, 0)
         {
         }
 
+        /// <summary>
+        /// Whether or not this option is currently checked.
+        /// </summary>
         public bool Checked
         {
             get
@@ -23,6 +32,11 @@ namespace CJBCheatsMenu.Framework.View
             }
         }
 
+        /// <summary>
+        /// Called when a left click occurs, checks/unchecks the checkbox.
+        /// </summary>
+        /// <param name="x">x position of the left click.</param>
+        /// <param name="y">y position of the left click.</param>
         public override void receiveLeftClick(int x, int y)
         {
             if (this.greyedOut)
@@ -33,6 +47,12 @@ namespace CJBCheatsMenu.Framework.View
             this.Checked = !this.Checked;
         }
 
+        /// <summary>
+        /// Draws the option into the menu.
+        /// </summary>
+        /// <param name="spriteBatch">Passed to the base stardew valley renderer to perform rendering.</param>
+        /// <param name="slotX">x position of the option to begin rendering.</param>
+        /// <param name="slotY">y position of the option to begin rendering.</param>
         public override void draw(SpriteBatch spriteBatch, int slotX, int slotY)
         {
             Vector2 position = new Vector2(slotX + this.bounds.X, slotY + this.bounds.Y);

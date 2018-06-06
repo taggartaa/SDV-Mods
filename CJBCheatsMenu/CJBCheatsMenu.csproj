@@ -51,6 +51,8 @@
     <Compile Include="Framework\CheatMenus\TimeCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\WarpLocationsCheatMenu.cs" />
     <Compile Include="Framework\CheatMenus\WeatherCheatMenu.cs" />
+    <Compile Include="Framework\MenuManager.cs" />
+    <Compile Include="Framework\Menu\IMenuManager.cs" />
     <Compile Include="Framework\Menu\IOptionHeartPicker.cs" />
     <Compile Include="Framework\Menu\IOptionCheckbox.cs" />
     <Compile Include="Framework\Menu\IOptionKeyPicker.cs" />
@@ -77,17 +79,12 @@
     <Compile Include="Framework\CheatMenus\PlayersAndToolsCheatMenu.cs" />
     <Compile Include="Framework\Cheats.cs" />
     <Compile Include="Framework\CheatsMenu.cs" />
-    <Compile Include="Framework\CheatOptions\CheatsOptionsCheckbox.cs" />
-    <Compile Include="Framework\CheatOptions\CheatsOptionsWeatherElement.cs" />
-    <Compile Include="Framework\CheatOptions\CheatsOptionsInputListener.cs" />
-    <Compile Include="Framework\CheatOptions\CheatsOptionsNPCSlider.cs" />
-    <Compile Include="Framework\CheatOptions\CheatsOptionsSlider.cs" />
     <Compile Include="Framework\CJB.cs" />
     <Compile Include="Framework\Menu\IOptionGroup.cs" />
     <Compile Include="Framework\View\ViewOptionSetButtonBase.cs" />
     <Compile Include="Framework\View\ViewOptionSlider.cs" />
+    <Compile Include="Framework\View\ViewScroller.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="Framework\Constants\MenuTab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Framework\ModConfig.cs" />
   </ItemGroup>
