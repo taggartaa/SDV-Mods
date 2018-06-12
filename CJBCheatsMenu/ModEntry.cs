@@ -76,10 +76,6 @@ namespace CJBCheatsMenu
             this.MenuManager.RegisterMenu(new Framework.CheatMenus.WarpLocationsCheatMenu(this.Config, this.Cheats, this.Helper.Translation));
             this.MenuManager.RegisterMenu(new Framework.CheatMenus.TimeCheatMenu(this.Config, this.Cheats, this.Helper.Translation));
             this.MenuManager.RegisterMenu(new Framework.CheatMenus.ControlsCheatsMenu(this.Config, this.Cheats, this.Helper.Translation));
-            for (int i = 0; i < 10; i++)
-            {
-                this.MenuManager.RegisterMenu(new TestMenu("testMenu_" + i, "Test Menu " + i));
-            }
         }
 
         public override object GetApi()
@@ -175,7 +171,7 @@ namespace CJBCheatsMenu
         {
             if (Game1.activeClickableMenu != null)
                 Game1.exitActiveMenu();
-            Game1.activeClickableMenu = new CheatsMenu(this.Config.DefaultTab, 0, this.MenuManager, this.Config, this.Cheats, this.Helper.Translation);
+            Game1.activeClickableMenu = new CheatsMenu(this.Config.DefaultTab, 0, this.MenuManager, this.Config, this.Helper.Translation);
         }
 
         /// <summary>Update the mod's config.json file from the current <see cref="Config"/>.</summary>
