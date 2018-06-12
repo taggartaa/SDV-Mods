@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
+using System.Linq;
 
 namespace CJBCheatsMenu.Framework
 {
@@ -18,64 +17,114 @@ namespace CJBCheatsMenu.Framework
         /// <summary>The mod settings.</summary>
         private readonly ModConfig Config;
 
-        /// <summary>The cheats helper.</summary>
-        private readonly Cheats Cheats;
-
         /// <summary>Provides translations for the mod.</summary>
         private readonly ITranslationHelper TranslationHelper;
 
+        /// <summary>
+        /// The manager that maintains a list of all the currently registered menus.
+        /// </summary>
         private readonly MenuManager MenuManager;
-        private View.ViewScroller<OptionsElement> ScrollableOptions;
-        private readonly List<ClickableComponent> OptionSlots = new List<ClickableComponent>();
-        private readonly List<ClickableComponent> Tabs = new List<ClickableComponent>();
+
+        /// <summary>
+        /// The scrollbar for the menu tabs.
+        /// </summary>
+        private View.ViewScrollbar TabsScrollbar { get; set; }
+
+        /// <summary>
+        /// The scroll area for the menu tabs.
+        /// </summary>
+        private View.ViewScrollableContents<View.ViewMenuTab> TabsScrollArea { get; set; }
+
+        /// <summary>
+        /// The views that are subviews of this menu.
+        /// </summary>
+        private List<View.IView> Children { get; set; } = new List<View.IView>();
+
+        /// <summary>
+        /// The child views that are scrollable.
+        /// </summary>
+        private List<View.IViewScrollable> Scrollables { get; set; } = new List<View.IViewScrollable>();
+
+        /// <summary>
+        /// The title of the menu.
+        /// </summary>
         private readonly ClickableComponent Title;
+
+        /// <summary>
+        /// Ensures the first 'P' button press that opened this menu doesn't immediately close it.
+        /// </summary>
+        private bool CanClose = false;
+
+        /// <summary>
+        /// The number of items in a scroll area page.
+        /// </summary>
         private const int ItemsPerPage = 10;
 
-        private string HoverText = "";
-        private int OptionsSlotHeld = -1;
-        private bool CanClose;
-        private string CurrentTabId { get; set; }
-
-        private Dictionary<String, int> MenuIndecies { get; set; } = new Dictionary<string, int>();
-
-        private IReadOnlyCollection<Menu.IMenu> Menus => MenuManager.Menus;
+        /// <summary>
+        /// The current view that the left click is being held down on.
+        /// </summary>
+        private View.IView ViewHeld  { get; set; } = null;
 
         /// <summary>
-        /// The currently selected menu.
+        /// The menus (for which there are tabs rendered for).
         /// </summary>
-        public Menu.IMenu CurrentMenu
-        {
-            get
-            {
-                return Menus.ElementAt(CurrentTabIndex);
-            }
-        }
-
-        /// <summary>
-        /// The tab index of the currently selected menu.
-        /// </summary>
-        private int CurrentTabIndex
-        {
-            get
-            {
-                return MenuIndecies[CurrentTabId];
-            }
-        }
+        private IReadOnlyList<Menu.IMenu> Menus => MenuManager.Menus;
 
         /// <summary>
         /// The width of a row where options are rendered.
         /// </summary>
-        private int RowWidth
+        private int OptionRowWidth => this.width - Game1.tileSize / 2;
+
+        /// <summary>
+        /// The height of a row where the options are being rendered.
+        /// </summary>
+        private int OptionRowHeight => 9 * StardewValley.Game1.pixelZoom;
+
+        /// <summary>
+        /// The id of the menu that is currently selected.
+        /// </summary>
+        /// <remarks>
+        /// Returns an empty string if there are no currently selected menus.
+        /// </remarks>
+        private string CurrentMenuId
         {
             get
             {
-                return this.width - Game1.tileSize / 2;
+                if (this.CurrentMenu != null)
+                {
+                    return this.CurrentMenu.Id;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            set
+            {
+                if (this.MenuManager.HasRegisteredMenu(value))
+                {
+                    this.CurrentMenu = this.MenuManager.GetRegisteredMenu(value);
+                }
+                else if (this.Menus.Count > 0)
+                {
+                    this.CurrentMenu = this.Menus.First();
+                }
+                else
+                {
+                    this.CurrentMenu = null;
+                }
             }
         }
 
-        /*********
-        ** Public methods
-        *********/
+        /// <summary>
+        /// The current menu that is selected.
+        /// </summary>
+        /// <remarks>
+        /// null if there is currently no selected menu.
+        /// </remarks>
+        private Menu.IMenu CurrentMenu { get; set; }
+
         /// <summary>
         /// Reterns a view for the passed in option.
         /// </summary>
@@ -84,7 +133,7 @@ namespace CJBCheatsMenu.Framework
         /// </remarks>
         /// <param name="option">The option to get the view for.</param>
         /// <returns>A view to render for this option.</returns>
-        private OptionsElement GetViewForOption(Menu.IOption option)
+        private View.IViewGroupItem GetViewForOption(Menu.IOption option)
         {
             Menu.IOptionCheckbox checkboxOption = option as Menu.IOptionCheckbox;
             if (checkboxOption != null)
@@ -95,7 +144,7 @@ namespace CJBCheatsMenu.Framework
             Menu.IOptionSetButton setButtonOption = option as Menu.IOptionSetButton;
             if (setButtonOption != null)
             {
-                return new View.ViewOptionSetButton(setButtonOption, this.RowWidth);
+                return new View.ViewOptionSetButton(setButtonOption, this.OptionRowWidth);
             }
 
             Menu.IOptionSlider sliderOption = option as Menu.IOptionSlider;
@@ -113,100 +162,179 @@ namespace CJBCheatsMenu.Framework
             Menu.IOptionKeyPicker keyPickerOption = option as Menu.IOptionKeyPicker;
             if (keyPickerOption != null)
             {
-                return new View.ViewOptionKeyPicker(keyPickerOption, this.RowWidth, this.TranslationHelper);
+                return new View.ViewOptionKeyPicker(keyPickerOption, this.OptionRowWidth, this.TranslationHelper);
             }
 
-            return new View.ViewOption<Menu.IOption>(option);
+            return new View.ViewOption<Menu.IOption>(option, this.OptionRowWidth, this.OptionRowHeight);
         }
 
-        public CheatsMenu(string currentTabId, MenuManager menuManager, ModConfig config, Cheats cheats, ITranslationHelper i18n)
+        /// <summary>
+        /// Adds a child to the list of child views and adds it to the list of scrollables if it is scrollable.
+        /// </summary>
+        /// <param name="child">The child to add.</param>
+        private void AddChild(View.IView child)
+        {
+            this.Children.Add(child);
+            View.IViewScrollable scrollable = child as View.IViewScrollable;
+            if (scrollable != null)
+            {
+                this.Scrollables.Add(scrollable);
+            }
+        }
+
+        /// <summary>
+        /// Creates the tabs scroll area and scrollbar.
+        /// </summary>
+        /// <param name="currentScrollerTabPosition">The current position of the scrollbar.</param>
+        private void CreateTabsScrollArea(int currentScrollerTabPosition)
+        {
+            int tabWidth = Game1.tileSize * 4;
+
+            List<View.ViewMenuTab> menuTabs = new List<View.ViewMenuTab>();
+            int selectedTabIndex = 0;
+            for (int i = 0; i < this.Menus.Count; i++)
+            {
+                Menu.IMenu menu = this.Menus[i];
+                View.ViewMenuTab menuTab = new View.ViewMenuTab(menu, tabWidth, this.OnMenuTabPressed);
+                if (menu.Id == this.CurrentMenuId)
+                {
+                    menuTab.Intensify = true;
+                    selectedTabIndex = i;
+                }
+                menuTabs.Add(menuTab);
+            }
+
+            this.TabsScrollbar = new View.ViewScrollbar(currentScrollerTabPosition, CheatsMenu.ItemsPerPage, this.xPositionOnScreen - tabWidth - 11 * Game1.pixelZoom, this.yPositionOnScreen + Game1.tileSize, this.height - Game1.tileSize * 2 + Game1.pixelZoom * CheatsMenu.ItemsPerPage, menuTabs.Count);
+            if (selectedTabIndex < this.TabsScrollbar.CurrentVisibleStartIndex ||
+                selectedTabIndex > this.TabsScrollbar.CurrentVisibleEndIndex)
+            {
+                this.TabsScrollbar.ScrollTo(selectedTabIndex);
+            }
+            Rectangle scrollableTabsBounds = new Rectangle(this.TabsScrollbar.Bounds.X + this.TabsScrollbar.Bounds.Width, this.TabsScrollbar.Bounds.Y, tabWidth, this.TabsScrollbar.Bounds.Height);
+            this.AddChild(this.TabsScrollbar);
+            this.TabsScrollArea = new View.ViewScrollableContents<View.ViewMenuTab>(this.TabsScrollbar, menuTabs, scrollableTabsBounds);
+            this.AddChild(this.TabsScrollArea);
+        }
+
+        /// <summary>
+        /// Create the scroll area and scrollbar for the options for the currently selected menu.
+        /// </summary>
+        private void CreateOptionsScrollArea()
+        {
+            if (this.CurrentMenu != null)
+            {
+                List<View.IViewGroupItem> options = new List<View.IViewGroupItem>();
+                foreach (Menu.IOptionGroup group in this.CurrentMenu.OptionGroups)
+                {
+                    options.Add(new View.ViewOptionGroupHeader(group.Title));
+                    foreach (Menu.IOption option in group.Options)
+                    {
+                        View.IViewGroupItem optionView = this.GetViewForOption(option);
+                        options.Add(optionView);
+                    }
+                }
+
+                View.ViewScrollbar scrollbar = new View.ViewScrollbar(0, CheatsMenu.ItemsPerPage, this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize, this.height - Game1.tileSize * 2);
+                this.AddChild(scrollbar);
+                Rectangle optionsScrollAreaBounds = new Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize * 5 / 4 + Game1.pixelZoom, this.OptionRowWidth, (this.height - Game1.tileSize * 2) + Game1.pixelZoom);
+                this.AddChild(new View.ViewScrollableContents<View.IViewGroupItem>(scrollbar, options, optionsScrollAreaBounds));
+            }
+        }
+
+        /// <summary>
+        /// Constructor for the cheats menu.
+        /// </summary>
+        /// <param name="currentMenuId">The id of the menu to open.</param>
+        /// <param name="tabScrollerPosition">The position the tabs scroller is scrolled to when first opened.</param>
+        /// <param name="menuManager">The manager that keeps track of the currently registered menus.</param>
+        /// <param name="config">The cheats config that holds all the users current preferences.</param>
+        /// <param name="i18n">Internaltionalization helper.</param>
+        public CheatsMenu(string currentMenuId, int tabScrollerPosition, MenuManager menuManager, ModConfig config, ITranslationHelper i18n)
           : base(Game1.viewport.Width / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, Game1.viewport.Height / 2 - (600 + IClickableMenu.borderWidth * 2) / 2, 800 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2)
         {
             this.Config = config;
-            this.Cheats = cheats;
             this.TranslationHelper = i18n;
             this.MenuManager = menuManager;
+            this.CurrentMenuId = currentMenuId;
 
             this.Title = new ClickableComponent(new Rectangle(this.xPositionOnScreen + this.width / 2, this.yPositionOnScreen, Game1.tileSize * 4, Game1.tileSize), i18n.Get("title"));
 
             int labelX = (int)(this.xPositionOnScreen - Game1.tileSize * 4.8f);
             int labelY = (int)(this.yPositionOnScreen + Game1.tileSize * 1.5f);
-            int labelHeight = (int)(Game1.tileSize * 0.9F);
 
-            for (int i = 0; i < Menus.Count; i++)
-            {
-                Menu.IMenu menu = Menus.ElementAt(i);
-                if (!MenuIndecies.ContainsKey(menu.Id))
-                {
-                    Tabs.Add(new ClickableComponent(new Rectangle(labelX, labelY + labelHeight * i, Game1.tileSize * 5, Game1.tileSize), menu.Id, menu.Title));
-                    MenuIndecies.Add(menu.Id, i);
-                }
-                else
-                {
-                    throw new Exception("Error: Two menus with same id: " + menu.Id);
-                }
-            }
+            this.CreateOptionsScrollArea();
+            this.CreateTabsScrollArea(tabScrollerPosition);
 
-            if (MenuIndecies.ContainsKey(currentTabId))
-            {
-                CurrentTabId = currentTabId;
-            }
-            else
-            {
-                CurrentTabId = Menus.First().Id;
-            }
-
-            for (int i = 0; i < CheatsMenu.ItemsPerPage; i++)
-            {
-                this.OptionSlots.Add(new ClickableComponent(new Rectangle(this.xPositionOnScreen + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize * 5 / 4 + Game1.pixelZoom + i * ((this.height - Game1.tileSize * 2) / CheatsMenu.ItemsPerPage), this.width - Game1.tileSize / 2, (this.height - Game1.tileSize * 2) / CheatsMenu.ItemsPerPage + Game1.pixelZoom), string.Concat(i)));
-            }
-
-            List<OptionsElement> options = new List<OptionsElement>();
-            foreach (Menu.IOptionGroup group in CurrentMenu.OptionGroups)
-            {
-                options.Add(new View.ViewOptionGroupHeader(group.Title));
-                foreach (Menu.IOption option in group.Options)
-                {
-                    OptionsElement optionView = this.GetViewForOption(option);
-                    options.Add(optionView);
-                }
-            }
-            this.ScrollableOptions = new View.ViewScroller<OptionsElement>(options, 0, CheatsMenu.ItemsPerPage, this.xPositionOnScreen + this.width + Game1.tileSize / 4, this.yPositionOnScreen + Game1.tileSize, this.height - Game1.tileSize * 2);
         }
 
-        public OptionsElement GetOptionElementForSlotHeld()
+        /// <summary>
+        /// Callback when a tab is pressed.
+        /// </summary>
+        /// <param name="menu">The menu related to the tab that was pressed.</param>
+        public void OnMenuTabPressed(Menu.IMenu menu)
         {
-            if (this.OptionsSlotHeld == -1)
-            {
-                return null;
-            }
-
-            IReadOnlyCollection<OptionsElement> visibleOptions = this.ScrollableOptions.VisibleItems;
-            if (this.OptionsSlotHeld >= visibleOptions.Count)
-            {
-                return null;
-            }
-
-            return visibleOptions.ElementAt(this.OptionsSlotHeld);
+            Game1.activeClickableMenu = new CheatsMenu(menu.Id, this.TabsScrollbar.CurrentVisibleStartIndex, this.MenuManager, this.Config, this.TranslationHelper);
         }
 
+        /// <summary>
+        /// Handle the left click event.
+        /// </summary>
+        /// <param name="x">x position of mouse when left click occured.</param>
+        /// <param name="y">y position of mouse when left click occured.</param>
+        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        {
+            if (GameMenu.forcePreventClose)
+                return;
+
+            foreach (View.IView child in this.Children)
+            {
+                if (child.Bounds.Contains(x, y))
+                {
+                    child.ReceiveLeftClick(x, y);
+                    this.ViewHeld = child;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handle the left click release event.
+        /// </summary>
+        /// <param name="x">x position of mouse when left click release occured.</param>
+        /// <param name="y">y position of mouse when left click release occured.</param>
+        public override void releaseLeftClick(int x, int y)
+        {
+            if (GameMenu.forcePreventClose)
+                return;
+
+            base.releaseLeftClick(x, y);
+            if (this.ViewHeld != null)
+            {
+                this.ViewHeld.LeftClickReleased(x, y);
+            }
+            this.ViewHeld = null;
+        }
+
+        /// <summary>
+        /// Handle the left click held event.
+        /// </summary>
+        /// <param name="x">x position of mouse during the left click hold.</param>
+        /// <param name="y">y position of mouse during the left click hold.</param>
         public override void leftClickHeld(int x, int y)
         {
             if (GameMenu.forcePreventClose)
                 return;
             base.leftClickHeld(x, y);
-            bool handled = this.ScrollableOptions.LeftClickHeld(x, y);
-            if (handled)
+            
+            if (this.ViewHeld != null)
             {
-                return;
+                this.ViewHeld.LeftClickHeld(x, y);
             }
-
-            OptionsElement optionHeld = this.GetOptionElementForSlotHeld();
-            if (optionHeld == null)
-                return;
-            optionHeld.leftClickHeld(x - this.OptionSlots[this.OptionsSlotHeld].bounds.X, y - this.OptionSlots[this.OptionsSlotHeld].bounds.Y);
         }
 
+        /// <summary>
+        /// Handles a key press event.
+        /// </summary>
+        /// <param name="key">The key that was pressed.</param>
         public override void receiveKeyPress(Keys key)
         {
             if ((Game1.options.menuButton.Contains(new InputButton(key)) || key.ToString() == this.Config.OpenMenuKey) && this.readyToClose() && this.CanClose)
@@ -217,88 +345,50 @@ namespace CJBCheatsMenu.Framework
             }
 
             this.CanClose = true;
-            OptionsElement optionHeld = this.GetOptionElementForSlotHeld();
-            if (optionHeld == null)
-                return;
-            optionHeld.receiveKeyPress(key);
+
+            foreach (View.IView child in this.Children)
+            {
+                child.ReceiveKeyPress(key);
+            }
         }
 
+        /// <summary>
+        /// Handles game pad button press event.
+        /// </summary>
+        /// <param name="key">The gamepad button that was pressed.</param>
         public override void receiveGamePadButton(Buttons key)
         {
             if (key == Buttons.LeftShoulder || key == Buttons.RightShoulder)
             {
-                // rotate tab index
-                int index = CurrentTabIndex;
-                if (key == Buttons.LeftShoulder)
-                    index--;
                 if (key == Buttons.RightShoulder)
-                    index++;
-
-                if (index >= this.Tabs.Count)
-                    index = 0;
-                if (index < 0)
-                    index = this.Tabs.Count - 1;
-
+                {
+                    this.TabsScrollArea.SelectNext();
+                } else if (key == Buttons.LeftShoulder)
+                {
+                    this.TabsScrollArea.SelectPrevious();
+                }
+                
                 // open menu with new index
-                Game1.activeClickableMenu = new CheatsMenu(Menus.ElementAt(index).Id, this.MenuManager, this.Config, this.Cheats, this.TranslationHelper);
+                Game1.activeClickableMenu = new CheatsMenu(this.TabsScrollArea.CurrentlySelected.Menu.Id, this.TabsScrollbar.CurrentVisibleStartIndex, this.MenuManager, this.Config, this.TranslationHelper);
             }
         }
 
+        /// <summary>
+        /// Handles the scroll wheel action.
+        /// </summary>
+        /// <param name="direction">The direction of the scroll wheel action.</param>
         public override void receiveScrollWheelAction(int direction)
         {
             if (GameMenu.forcePreventClose)
                 return;
             base.receiveScrollWheelAction(direction);
-            if (direction > 0)
-                this.ScrollableOptions.ScrollUp();
-            else if (direction < 0)
-            {
-                this.ScrollableOptions.ScrollDown();
-            }
-        }
 
-        public override void releaseLeftClick(int x, int y)
-        {
-            if (GameMenu.forcePreventClose)
-                return;
-            base.releaseLeftClick(x, y);
-            OptionsElement optionHeld = this.GetOptionElementForSlotHeld();
-            if (optionHeld != null)
-                optionHeld.leftClickReleased(x - this.OptionSlots[this.OptionsSlotHeld].bounds.X, y - this.OptionSlots[this.OptionsSlotHeld].bounds.Y);
-            this.OptionsSlotHeld = -1;
-            this.ScrollableOptions.ReleaseLeftClick(x, y);
-        }
-
-        public override void receiveLeftClick(int x, int y, bool playSound = true)
-        {
-            if (GameMenu.forcePreventClose)
-                return;
-            if (this.ScrollableOptions.Bounds.Contains(x, y))
+            Point mousePosition = Game1.getMousePosition();
+            foreach (View.IViewScrollable scrollable in this.Scrollables)
             {
-                bool handled = this.ScrollableOptions.ReceiveLeftClick(x, y);
-                if (handled)
+                if (scrollable.Bounds.Contains(mousePosition))
                 {
-                    return;
-                }
-            }
-
-            IReadOnlyCollection<OptionsElement> visibleOptions = this.ScrollableOptions.VisibleItems;
-            for (int index = 0; index < visibleOptions.Count; ++index)
-            {
-                OptionsElement option = visibleOptions.ElementAt(index);
-                if (this.OptionSlots[index].bounds.Contains(x, y) && option.bounds.Contains(x - this.OptionSlots[index].bounds.X, y - this.OptionSlots[index].bounds.Y - 5))
-                {
-                    option.receiveLeftClick(x - this.OptionSlots[index].bounds.X, y - this.OptionSlots[index].bounds.Y + 5);
-                    this.OptionsSlotHeld = index;
-                    return;
-                }
-            }
-
-            foreach (var tab in this.Tabs)
-            {
-                if (tab.bounds.Contains(x, y))
-                {
-                    Game1.activeClickableMenu = new CheatsMenu(tab.name,this.MenuManager, this.Config, this.Cheats, this.TranslationHelper);
+                    scrollable.ReceiveScrollWheelAction(direction);
                     return;
                 }
             }
@@ -310,9 +400,12 @@ namespace CJBCheatsMenu.Framework
         {
             if (GameMenu.forcePreventClose)
                 return;
-            this.HoverText = "";
         }
 
+        /// <summary>
+        /// Draws the cheats menu.
+        /// </summary>
+        /// <param name="spriteBatch">The sprite batch used to render assets.</param>
         public override void draw(SpriteBatch spriteBatch)
         {
             if (!Game1.options.showMenuBackground)
@@ -320,29 +413,10 @@ namespace CJBCheatsMenu.Framework
 
             Game1.drawDialogueBox(this.xPositionOnScreen, this.yPositionOnScreen, this.width, this.height, false, true);
             CJB.DrawTextBox(this.Title.bounds.X, this.Title.bounds.Y, Game1.dialogueFont, this.Title.name, 1);
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null);
-
-            IReadOnlyCollection<OptionsElement> visibleOptions = this.ScrollableOptions.VisibleItems;
-            for (int index = 0; index < visibleOptions.Count; ++index)
+            foreach (View.IView child in this.Children)
             {
-                visibleOptions.ElementAt(index).draw(spriteBatch, this.OptionSlots[index].bounds.X, this.OptionSlots[index].bounds.Y + 5);
+                child.Draw(spriteBatch);
             }
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
-            if (!GameMenu.forcePreventClose)
-            {
-
-                for (int i = 0; i < Tabs.Count; i++)
-                {
-                    ClickableComponent tab = Tabs[i];
-                    CJB.DrawTextBox(tab.bounds.X + tab.bounds.Width, tab.bounds.Y, Game1.smallFont, tab.label, 2, i == CurrentTabIndex ? 1F : 0.7F);
-                }
-
-                this.ScrollableOptions.Draw(spriteBatch);
-            }
-            if (this.HoverText != "")
-                IClickableMenu.drawHoverText(spriteBatch, this.HoverText, Game1.smallFont);
 
             if (!Game1.options.hardwareCursor)
                 spriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.getOldMouseX(), Game1.getOldMouseY()), Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, Game1.options.gamepadControls ? 44 : 0, 16, 16), Color.White, 0f, Vector2.Zero, Game1.pixelZoom + Game1.dialogueButtonScale / 150f, SpriteEffects.None, 1f);

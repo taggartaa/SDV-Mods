@@ -175,7 +175,7 @@ namespace CJBCheatsMenu
         {
             if (Game1.activeClickableMenu != null)
                 Game1.exitActiveMenu();
-            Game1.activeClickableMenu = new CheatsMenu(this.Config.DefaultTab, this.MenuManager, this.Config, this.Cheats, this.Helper.Translation);
+            Game1.activeClickableMenu = new CheatsMenu(this.Config.DefaultTab, 0, this.MenuManager, this.Config, this.Cheats, this.Helper.Translation);
         }
 
         /// <summary>Update the mod's config.json file from the current <see cref="Config"/>.</summary>

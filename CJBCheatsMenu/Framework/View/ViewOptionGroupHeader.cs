@@ -3,14 +3,14 @@
     /// <summary>
     /// Renders a group box header.
     /// </summary>
-    internal class ViewOptionGroupHeader : StardewValley.Menus.OptionsElement
+    internal class ViewOptionGroupHeader : ViewGroupItem
     {
         /// <summary>
         /// Contructor for a group box header view.
         /// </summary>
         /// <param name="title">The string to display about the group.</param>
         public ViewOptionGroupHeader(string title)
-            : base(title)
+            : base(title, -1, -1)
         {
         }
     }

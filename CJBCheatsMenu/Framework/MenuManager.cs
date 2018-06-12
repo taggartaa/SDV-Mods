@@ -21,7 +21,7 @@ namespace CJBCheatsMenu.Framework
         /// <summary>
         /// The menus in there display order.
         /// </summary>
-        public IReadOnlyCollection<Menu.IMenu> Menus
+        public IReadOnlyList<Menu.IMenu> Menus
         {
             get
             {
@@ -62,6 +62,29 @@ namespace CJBCheatsMenu.Framework
             registeredMenus.Add(menu.Id, menu);
             orderedMenus.Add(menu);
             return true;
+        }
+
+        /// <summary>
+        /// Returns whether or not a menu is registered with the passed in id.
+        /// </summary>
+        /// <param name="id">The id of the menu to check.</param>
+        /// <returns>true if the menu is currently registered, false otherwise.</returns>
+        public bool HasRegisteredMenu(string id)
+        {
+            return registeredMenus.ContainsKey(id);
+        }
+
+        /// <summary>
+        /// Gets a menu given the passed in id.
+        /// </summary>
+        /// <param name="id">The id of the menu to get.</param>
+        /// <returns>The menu with the given id.</returns>
+        /// <remarks>
+        /// Will throw a KeyNotFoundException if the id is not a currently registered menu.
+        /// </remarks>
+        public IMenu GetRegisteredMenu(string id)
+        {
+            return registeredMenus[id];
         }
     }
 }

@@ -1,17 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Menus;
 using System;
 
 namespace CJBCheatsMenu.Framework.View
 {
-    internal class ViewScrollbar : StardewValley.Menus.OptionsElement, IScrollable
+    internal class ViewScrollbar : IViewScrollable
     {
-        public ClickableTextureComponent UpArrow { get; protected set; }
-        public ClickableTextureComponent DownArrow { get; protected set; }
-        public ClickableTextureComponent Scrollbar { get; protected set; }
-        public Rectangle ScrollbarRunner { get; protected set; }
+        protected ClickableTextureComponent UpArrow { get; private set; }
+        protected ClickableTextureComponent DownArrow { get; private set; }
+        protected ClickableTextureComponent Scrollbar { get; private set; }
+        protected Rectangle ScrollbarRunner { get; private set; }
+
         public int ItemCount { get; set; }
         public int ItemsPerPage { get; protected set; }
 
@@ -19,12 +21,20 @@ namespace CJBCheatsMenu.Framework.View
         private bool IsScrolling { get; set; } = false;
 
         public ViewScrollbar(int currentIndex, int itemsPerPage, int x, int y, int height, int itemCount = 0)
-            : base("", new Rectangle(x, y, 11 * Game1.pixelZoom, height), -1)
         {
-            const int arrowButtonHeight = 12 * Game1.pixelZoom;
-            this.UpArrow = new ClickableTextureComponent("up-arrow", new Rectangle(x, y, this.bounds.Width, arrowButtonHeight), "", "", Game1.mouseCursors, new Rectangle(421, 459, 11, 12), Game1.pixelZoom);
-            this.DownArrow = new ClickableTextureComponent("down-arrow", new Rectangle(x, y + height - arrowButtonHeight, this.bounds.Width, arrowButtonHeight), "", "", Game1.mouseCursors, new Rectangle(421, 472, 11, 12), Game1.pixelZoom);
-            this.Scrollbar = new ClickableTextureComponent("scrollbar", new Rectangle(this.UpArrow.bounds.X + Game1.pixelZoom * 3, this.UpArrow.bounds.Y + this.UpArrow.bounds.Height + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom), "", "", Game1.mouseCursors, new Rectangle(435, 463, 6, 10), Game1.pixelZoom);
+            int arrowButtonHeight = 12 * Game1.pixelZoom;
+            int arrowButtonWidth = 11 * Game1.pixelZoom;
+            this.Bounds = new Rectangle(x, y, arrowButtonWidth, height);
+
+            Rectangle upArrowBounds = new Rectangle(x, y, this.Bounds.Width, arrowButtonHeight);
+            this.UpArrow = new ClickableTextureComponent("up-arrow", upArrowBounds, "", "", Game1.mouseCursors, new Rectangle(421, 459, 11, 12), Game1.pixelZoom);
+
+            Rectangle downArrowBounds = new Rectangle(x, y + height - arrowButtonHeight, arrowButtonWidth, arrowButtonHeight);
+            this.DownArrow = new ClickableTextureComponent("down-arrow", downArrowBounds, "", "", Game1.mouseCursors, new Rectangle(421, 472, 11, 12), Game1.pixelZoom);
+
+            Rectangle scrollbarBounds = new Rectangle(x + Game1.pixelZoom * 3, this.UpArrow.bounds.Bottom + Game1.pixelZoom, 6 * Game1.pixelZoom, 10 * Game1.pixelZoom);
+            this.Scrollbar = new ClickableTextureComponent("scrollbar", scrollbarBounds, "", "", Game1.mouseCursors, new Rectangle(435, 463, 6, 10), Game1.pixelZoom);
+
             this.ScrollbarRunner = new Rectangle(this.Scrollbar.bounds.X, this.Scrollbar.bounds.Y, this.Scrollbar.bounds.Width, height - arrowButtonHeight * 2 - Game1.pixelZoom * 2);
             this.ItemsPerPage = itemsPerPage;
             this.ItemCount = itemCount;
@@ -40,7 +50,7 @@ namespace CJBCheatsMenu.Framework.View
             protected set
             {
                 currentVisibleStartIndex = Math.Max(0, Math.Min(value, this.LastVisibleStartIndex));
-                updateScrollbarPosition();
+                UpdateScrollbarPosition();
             }
         }
 
@@ -83,7 +93,7 @@ namespace CJBCheatsMenu.Framework.View
             this.ScrollTo((int)((y - this.ScrollbarRunner.Y) / (double)this.ScrollbarRunner.Height * (this.LastVisibleStartIndex + 1)));
         }
 
-        private void updateScrollbarPosition()
+        private void UpdateScrollbarPosition()
         {
             if (this.ItemCount <= this.ItemsPerPage)
                 return;
@@ -91,11 +101,11 @@ namespace CJBCheatsMenu.Framework.View
             this.Scrollbar.bounds.Y = this.ScrollbarRunner.Height / (this.LastVisibleStartIndex + 1) * this.CurrentVisibleStartIndex + this.UpArrow.bounds.Bottom + Game1.pixelZoom;
             if (this.AtBottom())
             {
-                this.Scrollbar.bounds.Y = this.DownArrow.bounds.Y - this.Scrollbar.bounds.Height - Game1.pixelZoom;
+                this.Scrollbar.bounds.Y = this.ScrollbarRunner.Bottom - this.Scrollbar.bounds.Height;
             }
         }
 
-        public override void leftClickHeld(int x, int y)
+        public void LeftClickHeld(int x, int y)
         {
             if (this.IsScrolling)
             {
@@ -108,12 +118,12 @@ namespace CJBCheatsMenu.Framework.View
             }
         }
 
-        public override void leftClickReleased(int x, int y)
+        public void LeftClickReleased(int x, int y)
         {
             this.IsScrolling = false;
         }
 
-        public override void receiveLeftClick(int x, int y)
+        public void ReceiveLeftClick(int x, int y)
         {
             if (this.DownArrow.containsPoint(x, y))
             {
@@ -131,7 +141,7 @@ namespace CJBCheatsMenu.Framework.View
             };
         }
 
-        public bool ReceiveScrollWheelAction(int direction)
+        public void ReceiveScrollWheelAction(int direction)
         {
             if (direction > 0)
             {
@@ -141,19 +151,6 @@ namespace CJBCheatsMenu.Framework.View
             {
                 this.ScrollDown();
             }
-            else
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public void PerformHoverAction(int x, int y)
-        {
-            this.UpArrow.tryHover(x, y);
-            this.DownArrow.tryHover(x, y);
-            this.Scrollbar.tryHover(x, y);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -169,8 +166,15 @@ namespace CJBCheatsMenu.Framework.View
             this.Scrollbar.draw(spriteBatch);
         }
 
+        public void ReceiveKeyPress(Keys key)
+        {
+
+        }
+
         private int LastVisibileIndex => Math.Max(0, this.ItemCount - 1);
 
         private int LastVisibleStartIndex => Math.Max(0, this.ItemCount - this.ItemsPerPage);
+
+        public Rectangle Bounds { get; set; }
     }
 }

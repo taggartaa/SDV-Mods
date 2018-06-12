@@ -6,7 +6,7 @@ namespace CJBCheatsMenu.Framework.View
     /// Renders an option by displaying a label.
     /// </summary>
     /// <typeparam name="T">The type of option that this view renders.</typeparam>
-    internal class ViewOption<T> : StardewValley.Menus.OptionsElement where T : Menu.IOption
+    internal class ViewOption<T> : ViewGroupItem where T : Menu.IOption
     {
         /// <summary>
         /// The underlying option being rendered.
@@ -28,8 +28,8 @@ namespace CJBCheatsMenu.Framework.View
         /// <param name="width">The width of this option.</param>
         /// <param name="height">The height of this option.</param>
         /// <param name="whichOption">Value that sometimes affects rendering but should otherwise be ignored.</param>
-        public ViewOption(T option, int width = 9 * StardewValley.Game1.pixelZoom, int height = 9 * StardewValley.Game1.pixelZoom, int whichOption = -1)
-            : base(option.Label, -1, -1, width, height, whichOption)
+        public ViewOption(T option, int width, int height, int whichOption = -1)
+            : base(option.Label, width, height, whichOption)
         {
             this.Option = option;
             this.greyedOut = this.Option.Disabled;
